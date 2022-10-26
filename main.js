@@ -13,7 +13,11 @@ class momgodb {
           try{
               await mongoose.connect(URL , options) ;
               // ! Generate custem methods 
-
+              console.log('enerating mengodb querys ....');
+              Object.entries(models).forEach( async( key , value ) => {
+                   const dbMethods = GenerateMethods(value);
+                   this.querys[key] = dbMethods ;
+              })
               // ! Print succesfully connection message
               console.log(`App successfully connect with mongodb : - ${URL}`);
           }
@@ -39,3 +43,5 @@ class momgodb {
          this.schemas[collectionName] = collectionSchema ;
     }
 }
+
+module.exports = momgodb ;

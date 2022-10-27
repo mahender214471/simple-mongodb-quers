@@ -4,7 +4,12 @@ const GenerateMethods = (Model) => {
   try {
     const methods = {};
     // ! Create documents
-    methods.creadeDoc = async (documents) => {
+    methods.createDocOne = async ( document ) => {
+       const docToSave = { ...document , createdAt:moment().valueOf() , updatedAt:moment().valueOf() }
+       const newDoc = new Model(docToSave);
+       return await newDoc.save();
+    }
+    methods.creadeDocs = async (documents) => {
       try {
         if (!Array.isArray(documents)) {
           throw {
@@ -19,7 +24,7 @@ const GenerateMethods = (Model) => {
               message: "Each document in array should we an object",
             };
           } else {
-            documents[i].cretedAt = moment().valueOf();
+            documents[i].createdAt = moment().valueOf();
             documents[i].updatedAt = moment().valueOf();
           }
         }
@@ -39,20 +44,28 @@ const GenerateMethods = (Model) => {
       sort,
       populate
     ) => {
-      return await Model.find(filter, projection)
+      const data =  await Model.find(filter, projection)
         .limit(limit)
         .skip(skip)
         .sort(sort)
         .populate(populate);
+        const count = await methods.coundDoc(filter) ;
+        return {
+           data , count
+        }
     };
+    methods.coundDoc = async (filter) => {
+         return await Model.find(filter).count()
+    }
     methods.findById = async (id, projection) => {
       return await Model.findById(id, projection);
     };
     methods.findByIdAndUpdate = async (id, dataToUpdate) => {
-      return await Model.findByIdAndUpdate(id, {
+      await Model.findByIdAndUpdate(id, {
         ...dataToUpdate,
         updatedAt: moment().valueOf(),
       });
+      return  await methods.findById(id);
     };
     // ! Updates documents
     methods.updateOne = async (filter, dataToUpdate) => {
@@ -60,25 +73,38 @@ const GenerateMethods = (Model) => {
         ...dataToUpdate,
         updatedAt: moment().valueOf(),
       });
-      return await methods.finddocs(filter);
+      const updatedData =  await Model.find(filter);
+      return { message:"Document updated succesfully" , data:updatedData[0]}
     };
     methods.updateMany = async (filter, dataToUpdate) => {
       await Model.updateMany(filter, {
         ...dataToUpdate,
         updatedAt: moment().valueOf(),
       });
-      return await methods.finddocs(filter);
+      const updatedData =  await methods.finddocs(filter);
+      return { message:"Documents updated succesfully" , ...updatedData}
     };
     // ! Delete documets
     methods.softDelete = async (filter) => {
       await methods.updateMany(filter, { deletedAt: true });
-      return true;
+      const deletedData = await methods.finddocs(filter);
+      return {message:"Documents soft deleted succesfully" , ...deletedData};
     };
     methods.hardDeleteOne = async (filter) => {
-      return await Model.deleteOne(filter);
+      const docData = await Model.find(filter);
+      if(!docData[0]){
+         return { message:"Document not found" , data:{}}
+      }
+      await Model.deleteOne(filter);
+      return { message:"Document deleted succesfully" , data:docData[0]}
     };
     methods.hardDelete = async (filter) => {
-      return await Model.remove(filter);
+      const docData = await methods.finddocs(filter);
+      if(!docData.data[0]){
+         return { message:"Documents not found" , ...docData}
+      }
+      await Model.deleteMany(filter);
+      return { message:"Documents deleted succesfully" , ...docData}
     };
     // ! Advance methods
     methods.aggregate = async (aggregateQuery) => {

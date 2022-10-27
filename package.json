@@ -1,5 +1,5 @@
 {
-  "name": "simple-mongodb-querys",
+  "name": "mongodb-querys",
   "version": "1.0.0",
   "description": "A simple mongodb driver for perform crud opration on documents in mongodb using nodejs",
   "main": "index.js",

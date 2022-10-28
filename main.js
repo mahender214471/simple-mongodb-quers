@@ -70,6 +70,19 @@ class momgodb {
             throw new Error(err);
         }
     }
+    useMongodb ( req , res , next ) {
+         try{
+            const schemas = this.schemas;
+            const models  = this.models ;
+            const querys  = this.querys; 
+            req.mongodb   =   { schemas , models , querys };
+            next();
+         }
+         catch(err){
+            console.log('Error in enable mongodb quers in req ' , err );
+            next(err);
+         }
+    }
 }
 
 module.exports = momgodb ;

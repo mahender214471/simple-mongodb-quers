@@ -209,7 +209,7 @@ await mongodb.connect('mongodb://localhost:27017/test' , {
 | createSchema | mongodb.createSchema({// your schema config}) | This will create the schema ( document prototype) for your document |
 | createModel  | mongodb.createModel(collectionName , collectionSchema) | This will create the model for your document |
 |createCustemMethods| mongodb.createCustemMethods({methodsName:(models , querys) => { return () => { // your code}}})  | You can create your own custem methods for perform sum oprations on mongodb | 
-|useMongodb | app.use(mongodb.useMongodb) | This will add all the mongodb querys in your all APIS endpoint req object|
+|useMongodb | app.use(mongodb.useMongodb(mongodb)) | This will add all the mongodb querys in your all APIS endpoint req object|
 |connect | mongodb.connect(mongoURL , options) | This will conect your app to mongodb database|
 - #### All querys methods 
  `db = mongodb.querys[modelName];`
@@ -290,4 +290,6 @@ const port = process.env.PORT || 4000;
 - ## Let in touch
 - [Github](https://github.com/mahender214471)  
 - [Linked](https://www.linkedin.com/in/mahender-rajput-9ba900229/) 
+  
+
   

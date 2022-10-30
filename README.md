@@ -14,16 +14,20 @@ A [NodeJs](https://nodejs.org/en/docs/) package for make simple and easy [Mongod
 
 - ## How to use ?
 - #### Import the package 
-```
+```js
   const mongodb = require('mongodb-querys');
 ```
 - #### Create schema for your document 
   
-```
-  const userSchema =  mongodb.createSchema({
+```js
+  const schema = {
       name:{type:String , required:true},
       email:{type:String , required:true}
-  });
+  }
+  const options = {// mongoose schema optins} ;
+  // default options
+  // versionKey:false , autoCreate:true , autoIndex:true , timestamps:true
+  const userSchema =  mongodb.createSchema(schema , options );
 
   // Note => This is standard mongoose schema you can write your mongoose middlwares on it like pre or post hooks.
   // userSchema.pre('save', async function (next) {})
@@ -31,13 +35,13 @@ A [NodeJs](https://nodejs.org/en/docs/) package for make simple and easy [Mongod
 ```
 
 - #### Create model for your document 
-```
+```js
 mongodb.createModel('user' , userSchema);
 ```
 
 
 - #### How to use mongodb query ?
-```
+```js
 // Its contain all the query method
 mognodb.querys 
 // How to get all  query method of single model
@@ -47,7 +51,7 @@ mognodb.querys[yourModelNane]
 - #### How to create documents in mongodb ?
 - ##### `creadeDocs` method
 Use for create single or multiple documents.
-```
+```js
 // For single document
 const newDocs = [{
     name:"mahender"
@@ -55,7 +59,7 @@ const newDocs = [{
 }]
 const docData = await mognodb.querys.user.creadeDocs(newDocs)
 ``` 
-```
+```js
 // For multiple documents
 const newDocs = [
    {
@@ -75,7 +79,7 @@ const docData = await mognodb.querys.user.creadeDocs(newDocs)
 ```
 - ##### `createDocOne` method
 Use for create single document. 
-```
+```js
 const newDocs = {
     name:"mahender"
     email:"mahender@mjsofwares.com"
@@ -87,7 +91,7 @@ const docData = await mognodb.querys.user.createDocOne(newDocs)
 - ##### `finddocs` method
 Use for find multiple documents.
 
-```
+```js
  const filter     = {name:"mahender"}  //Filter for serach document in database.
  const projection = {email:1}          // Projection is what field you want from your document.
  const limit      = 10                 // Limit how manny document you want from database
@@ -100,16 +104,16 @@ Use for find multiple documents.
 ```
 - ##### `findById` method
 Use for find single document.
-```
+```js
 const id = '857454h5jhvbcnvbc'  // your document id
 const projection = {email:1}    // Projection is what field you want from your document.
-const docData = await mognodb.querys.user.indById(id , projection);
+const docData = await mognodb.querys.user.findById(id , projection);
 
 ```
 
 - ##### `findByIdAndUpdate` method
 Use for find and update the document.
-```
+```js
 const id           = "jjjrtjhe48675467856476"
 const dataToUpdate = { name:"mahender rajput"}
 //It will return the updated data of document.
@@ -117,7 +121,7 @@ const docData      = await await mognodb.querys.user.findByIdAndUpdate(id , data
 ```
 - #### How to count documents in mongodb ?
 - ##### `coundDoc` method
-```
+```js
 const filter = {email:"mahender@mj.com"};
 const count  = await await mognodb.querys.coundDoc(filter)
 ```
@@ -125,14 +129,14 @@ const count  = await await mognodb.querys.coundDoc(filter)
 - #### How to update documents in mongodb ?
 - ##### `updateOne` method
 Use for update single document.
-```
+```js
  const filter       = { email:"mahender@mj.com"} ;
  const dataToUpdate = {$set:{name:"Mahender Rajput"}} ;
  const docData      = await await mognodb.querys.updateOne(filter , database)
 ```
 - ##### `updateMany` method
-Use for update single document.
-```
+Use for update multiple document.
+```js
  const filter       = { email:"mahender@mj.com"} ;
  const dataToUpdate = {$set:{name:"Mahender Rajput"}} ;
  // It will update all the matched documents according to the filter and return updated data of the documents
@@ -141,30 +145,30 @@ Use for update single document.
 - #### How to delete documents in mongodb ?
 - ##### `softDelete` method
 It will update the deletedAt key of all the matched document for softDelete the documents.
-```
+```js
 const filter = {} ;
 const docData      = await await mognodb.querys.user.softDelete(filter)
 ```
 - ##### `hardDeleteOne` method
 It will delete single document and return the document data for backup
-```
+```js
 const filter = {} ;
 const docData      = await await mognodb.querys.user.hardDeleteOne(filter)
 ```
 - ##### `hardDelete` method
 It will delete all the documents according to filter and return the documents data for backup
-```
+```js
 const filter = {} ;
 const docData      = await await mognodb.querys.user.hardDelete(filter)
 ```
 - #### How to perform aggregate opration in mongodb?
 - ##### `aggregate` method
-```
+```js
 const resultData = await await mognodb.querys.user.aggregate([//.. your aggregate pipeline query ]);
 // Note => We will working on make easy aggregate opration
 ```
 - #### How to create and use your own query methods ?
-```
+```js
 // create own query methods
 mongodb.createCustemMethods({
   methodName1:(models , querys) => {
@@ -185,13 +189,13 @@ Exp 2 => mongodb.querys.user.methodName2()
 
 ``` 
 - #### Use express middlwares for get all the querys in your req object.
-```
-app.use(mognodb.useMongodb);
+```js
+app.use(mognodb.useMongodb(mongodb));
 // Now get all the mongodb querys in your all API endpoint useng req.mognodb
 
 ```
 - #### Connect the app with mongodb database 
-```
+```js
 // It will return  promise so use async await or then , catch
 await mongodb.connect('mongodb://localhost:27017/test' , {
   useNewUrlParser: true,
@@ -224,9 +228,57 @@ await mongodb.connect('mongodb://localhost:27017/test' , {
 | hardDelete | db.hardDelete(filter) | This will hard-delete all the documents matched to the filter |
 | aggregate  | db.aggregate([// aggregate pipeline query]) | This will perform aggregate opration on your database |
 
+- #### Quick Start
+```js
+const express = require("express");
+const mongodb = require("mongodb-querys");
+const app = express();
+const port = process.env.PORT || 4000;
+(async () => {
+  app.use(express.json({}));
+  app.use(express.urlencoded({ extended: true }));
+  // Create document schema
+  const schema = {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    mobile: { type: String, required: true },
+    address: { type: String, required: true },
+    password: { type: String, required: true },
+  }
+  const options = {autoCreate:false} ;
+  // Default options
+ //versionKey:false , autoCreate:true , autoIndex:true , timestamps:true
+  const userSchema = mongodb.createSchema(schema , options);
+  // Create user model
+  mongodb.createModel("user", userSchema);
 
+  // Create connection to mongodb
+  await mongodb.connect(
+    "mongodb://localhost:27017/test",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  );
 
+  app.use(mongodb.useMongodb(mongodb));
 
+  app.get("/", (req, res, next) => {
+    const { mongodb } = req;
+    // Get all models
+    const models = mongodb.models;
+    // Get all querys
+    const querys = mongodb.querys;
+    console.log("mogodb conf ============>", mongodb);
+    console.log("mongodb models ==========>", models);
+    console.log("mongodb querys ===========>", querys);
+    return res.send("Welcome on NodeJs , mongodb server APIS");
+  });
+
+  app.listen(port, () => console.log(`Lisning at port : -${port}`));
+})();
+
+```
 - ## Reference docs
 - [Mongoose docs](https://mongoosejs.com/)  
 - [Mongodb docs](https://mongoosejs.com/) 

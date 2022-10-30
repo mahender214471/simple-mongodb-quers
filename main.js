@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const GenerateMethods = require('./methods');
 
 //! CLASS FOR MANAGE MONGODB QUERYS
-class momgodb {
+class mongodb {
     constructor () {
          this.schemas       = {} ;
          this.models        = {} ;
@@ -14,7 +14,7 @@ class momgodb {
           try{
               await mongoose.connect(URL , options) ;
               // ! Generate custem methods 
-              console.log('Generating mengodb querys ....');
+              console.log('Generating mongodb querys ....');
               Object.entries( this.models ).forEach( async([key, value]) => {
                    const methods = await GenerateMethods(value);
                    this.querys[key] = methods ;
@@ -38,13 +38,13 @@ class momgodb {
           }
     }
     
-    createSchema ( schema ) {
+    createSchema ( schema  , options) {
           const docSchema = new mongoose.Schema({
              createdAt:{type:Number , default:moment().valueOf()},
              updatedAt:{type:Number , default:moment().valueOf()},
              ...schema,
              deletedAt:{type:Boolean , default:false}
-          } , { versionKey:false , autoCreate:true , autoIndex:true , timestamps:true})
+          } , { versionKey:false , autoCreate:true , autoIndex:true , timestamps:true , ...options})
           return docSchema ;
     }
 
@@ -56,7 +56,6 @@ class momgodb {
 
     async createCustemMethods (object) {
         try{
-            console.log('custem methods ==========>' , object)
             Object.entries( this.models ).forEach( async([key, value]) => {
                 if(object[key] === key ) {
                      throw { Error:`Custem method name ${key} not allow use diffrent`}
@@ -70,13 +69,12 @@ class momgodb {
             throw new Error(err);
         }
     }
-    useMongodb ( req , res , next ) {
+    useMongodb ( mongodb ) {
          try{
-            const schemas = this.schemas;
-            const models  = this.models ;
-            const querys  = this.querys; 
-            req.mongodb   =   { schemas , models , querys };
-            next();
+             return ( req , res , next) => {
+                 req.mongodb = mongodb;
+                 next();
+             }
          }
          catch(err){
             console.log('Error in enable mongodb quers in req ' , err );
@@ -85,4 +83,4 @@ class momgodb {
     }
 }
 
-module.exports = momgodb ;
+module.exports = mongodb ;

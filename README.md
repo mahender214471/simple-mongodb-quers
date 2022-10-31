@@ -168,9 +168,11 @@ const resultData = await await mognodb.querys.user.aggregate([//.. your aggregat
 // Note => We will working on make easy aggregate opration
 ```
 - #### How to create and use your own query methods ?
+- #### `createCustemMethodsGlobel` method 
+Use for create globel methods for all your models
 ```js
 // create own query methods
-mongodb.createCustemMethods({
+mongodb.createCustemMethodsGlobel({
   methodName1:(models , querys) => {
       return () => {
            // Your code for perform opration on mongodb
@@ -182,6 +184,30 @@ mongodb.createCustemMethods({
       }
   }
 })
+// Use your own method 
+//mongodb.querys[modelName].yourMethodName();
+Exp 1 => mongodb.querys.user.methodName1()
+Exp 2 => mongodb.querys.user.methodName2()
+
+``` 
+- #### `createCustemMethods` method 
+Use for create methods for single model
+```js
+// create own query methods
+const modelName = 'user'
+const methods = {
+  methodName1:(models , querys) => {
+      return () => {
+           // Your code for perform opration on mongodb
+      }
+  },
+  methodName2:(models , querys) => {
+      return () => {
+           // Your code for perform opration on mongodb
+      }
+  }
+}
+mongodb.createCustemMethods( modelName , methods )
 // Use your own method 
 //mongodb.querys[modelName].yourMethodName();
 Exp 1 => mongodb.querys.user.methodName1()
@@ -208,7 +234,8 @@ await mongodb.connect('mongodb://localhost:27017/test' , {
 |-------------|------------|-------------------|
 | createSchema | mongodb.createSchema({// your schema config}) | This will create the schema ( document prototype) for your document |
 | createModel  | mongodb.createModel(collectionName , collectionSchema) | This will create the model for your document |
-|createCustemMethods| mongodb.createCustemMethods({methodsName:(models , querys) => { return () => { // your code}}})  | You can create your own custem methods for perform sum oprations on mongodb | 
+|createCustemMethodsGlobel| mongodb.createCustemMethodsGlobel({methodsName:(models , querys) => { return () => { // your code}}})  | You can create your own custem methods which are accessible for all your models for performing some operations on MongoDB |
+|createCustemMethods | mongodb.createCustemMethods(modelName , { method1:(model , query) => { return () => { // your code}}}) |You can create your own custem methods which are accessible for a single model  for performing some operations on MongoDB |
 |useMongodb | app.use(mongodb.useMongodb(mongodb)) | This will add all the mongodb querys in your all APIS endpoint req object|
 |connect | mongodb.connect(mongoURL , options) | This will conect your app to mongodb database|
 - #### All querys methods 
@@ -279,9 +306,112 @@ const port = process.env.PORT || 4000;
 })();
 
 ```
+- #### How to use it in your API ?
+- #### Create user API
+```js
+app.post('/create-user' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const userData = req.body ;
+     const newUser = await mongodb.querys.user.createDocOne(userData);
+     return res.send(newUser);
+     
+})
+```
+- #### Create users API
+```js
+app.post('/create-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const userData = req.body ;
+     const newUser = await mongodb.querys.user.creadeDocs(userData);
+     return res.send(newUser);
+     
+})
+```
+
+- #### Get users API
+```js
+app.get('/get-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter , limit , skip } = req.query;
+     const users = await mongodb.querys.user.finddocs(filter , {} , limit , skip , {name:1})
+     return res.send(users);
+     
+})
+```
+- #### Get user API
+```js
+app.get('/get-user' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { id } = req.query;
+     const user = await mongodb.querys.user.findById(id , {});
+     return res.send(user);
+     
+})
+```
+
+- #### Get numbers of users API
+```js
+app.get('/count-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter } = req.query;
+     const user = await mongodb.querys.user.coundDoc(filter);
+     return res.send(user);
+     
+})
+```
+- #### Update user API
+```js
+app.put('/update-user' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter , dataToUpdate } = req.body;
+     const user = await mongodb.querys.user.updateOne(filter , dataToUpdate);
+     return res.send(user);
+     
+})
+```
+- #### Update users API
+```js
+app.put('/update-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter , dataToUpdate } = req.body;
+     const user = await mongodb.querys.user.updateMany(filter , dataToUpdate);
+     return res.send(user);
+     
+})
+```
+- #### Soft delete users API
+```js
+app.delete('/soft-delete-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter } = req.body;
+     const docData      = await await mognodb.querys.user.softDelete(filter)
+     return res.send(docData);
+     
+})
+```
+- #### Hard delete user API
+```js
+app.delete('/hard-delete-user' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter } = req.body;
+     const docData      = await await mognodb.querys.user.softDelete(filter)
+     return res.send(docData);
+     
+})
+```
+- #### Hard delete users API
+```js
+app.delete('/hard-delete-users' ,async (req , res , next) => {
+     const { mongodb } = req ;
+     const { filter } = req.body;
+     const docData      = await await mognodb.querys.user.hardDelete(filter)
+     return res.send(docData);
+     
+})
+```
 - ## Reference docs
-- [Mongoose docs](https://mongoosejs.com/)  
 - [Mongodb docs](https://mongoosejs.com/) 
+- [Mongoose docs](https://mongoosejs.com/)  
 - [Demos](https://mongoosejs.com/)  
 
 

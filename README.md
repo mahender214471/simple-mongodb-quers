@@ -412,9 +412,7 @@ app.delete('/hard-delete-users' ,async (req , res , next) => {
 - ## Reference docs
 - [Mongodb docs](https://mongoosejs.com/) 
 - [Mongoose docs](https://mongoosejs.com/)  
-- [Demos](https://mongoosejs.com/)  
-
-
+  
 - ## Author
   Mahender Rajput 
 - ## Let in touch

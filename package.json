@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["mongodb" , "mongoose" , "databse" , "mongodb-querys"],
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -245,7 +245,7 @@ await mongodb.connect('mongodb://localhost:27017/test' , {
 | createDocOne| db.createDocOne(docData) | This will create a single document in your MongoDB collection |
 | creadeDocs  | db.creadeDocs([doc1,doc2 , doc3]) | This will create multiple documents in your MongoDB collection |
 | finddocs    | db.finddocs(filter , projection , limit , skip , sort , populate) | This will find all the documents in your collection according to the filter and  |
-| findById    | db.findById(id , projection) |  This will find onel document in your collection according to the id |
+| findById    | db.findById(id , projection) |  This will find one document in your collection according to the id |
 | findByIdAndUpdate | db.findByIdAndUpdate(id , dataToUpdate) | This will update the document according to id and return updated data of document |
 | coundDoc   | db.coundDoc(filter) | This will count the numbers of documents in your collection |
 | updateOne  | db.updateOne(filter , dataToUpdate) | This willl update the first single document matched to the filter |
